@@ -1,20 +1,29 @@
 <launch>
-  <include
-    file="$(find gazebo_ros)/launch/empty_world.launch" />
-  <node
-    name="tf_footprint_base"
-    pkg="tf"
-    type="static_transform_publisher"
-    args="0 0 0 0 0 0 base_link base_footprint 40" />
-  <node
-    name="spawn_model"
-    pkg="gazebo_ros"
-    type="spawn_model"
-    args="-file $(find robot_arm)/urdf/robot_arm.urdf -urdf -model robot_arm"
-    output="screen" />
-  <node
-    name="fake_joint_calibration"
-    pkg="rostopic"
-    type="rostopic"
-    args="pub /calibrated std_msgs/Bool true" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find robot_arm)/urdf/robot_arm.xacro'" />
+  
+  <!-- Spawn the robot in Gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot "
+    respawn="false" output="screen" />
+  
+
+
+  <!-- 启动 C++ 版的 Mimic 接力节点 -->
+  <node name="mimic_relay_node" pkg="robot_arm_control" type="mimic_relay_node" output="screen">
+    <!-- 如果需要修改主关节名字，可以在这里传参 -->
+    <param name="master_joint" value="joint6_left" />
+  </node>
+
+  <include file="$(find robot_arm_control)/launch/robot_arm_control.launch" />
+    
 </launch>
+

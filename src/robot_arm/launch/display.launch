@@ -1,9 +1,14 @@
 <launch>
   <arg
     name="model" />
-  <param
+  <arg
+    name="gui"
+    default="true" />
+  <!-- <param
     name="robot_description"
-    textfile="$(find robot_arm)/urdf/robot_arm.urdf" />
+    textfile="$(find robot_arm)/urdf/robot_arm.xacro" /> -->
+   <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find robot_arm)/urdf/robot_arm.xacro'" />
   <node
     name="joint_state_publisher_gui"
     pkg="joint_state_publisher_gui"
