@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!-- SDF 版本号：需与 Gazebo 版本匹配（gz sim 6/7 支持 1.9/1.10） -->
+<sdf version="1.9">
+  <!-- 世界名称（自定义） -->
+  <world name="my_empty_world">
+
+    <!-- 1. 地面平面（必选：提供物理碰撞面，避免模型掉出） -->
+    <include>
+      <!-- 引用 Gazebo 内置的地面模型（无需手动建模） -->
+      <uri>model://ground_plane</uri>
+      <!-- 可选：修改地面颜色（默认灰色，这里改为浅灰色） -->
+      <pose>0 0 0 0 0 0</pose> <!-- x y z rpy 位置姿态（默认在原点） -->
+    </include>
+
+    <!-- 2. 太阳光照（必选：提供环境光和阴影，可视化更清晰） -->
+    <include>
+      <uri>model://sun</uri>
+      <!-- 可选：调整太阳位置（影响阴影方向） -->
+      <pose>10 0 10 0 0.5 0</pose> <!-- x=10, z=10（斜上方光照） -->
+    </include>
+
+    <!-- 3. 物理参数（必选：定义仿真的物理规则，如重力、阻尼） -->
+    <physics name="default_physics" default="true" type="ignition::physics::dartsim">
+      <max_step_size>0.001</max_step_size> <!-- 仿真步长（越小越精准，越耗性能） -->
+      <real_time_factor>1.0</real_time_factor> <!-- 实时因子（1.0=与现实时间同步） -->
+      <real_time_update_rate>1000</real_time_update_rate> <!-- 仿真更新频率（Hz） -->
+      <gravity>0 0 -9.81</gravity> <!-- 重力加速度（默认竖直向下） -->
+      <!-- 可选：添加阻尼（减少模型抖动） -->
+      <damping>
+        <linear>0.01</linear> <!-- 线性阻尼 -->
+        <angular>0.01</angular> <!-- 角阻尼 -->
+      </damping>
+    </physics>
+
+    <!-- 可选：添加雾效（优化可视化） -->
+    <scene>
+      <fog>
+        <type>linear</type>
+        <color>0.8 0.8 0.8 1</color>
+        <start>10</start> <!-- 雾效开始距离 -->
+        <end>50</end> <!-- 雾效结束距离 -->
+      </fog>
+    </scene>
+
+  </world>
+</sdf>
