@@ -1,4 +1,3 @@
-
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
@@ -31,12 +30,16 @@ public:
         // 初始化发布者
         for (auto const& [controller, multiplier] : mimic_map_)
         {
-            std::string topic = "/robot_arm/" + controller + "/command";
+            // 修改话题前缀：从 /robot_arm 改为 /arm/robot_arm
+            std::string topic = "/arm/robot_arm/" + controller + "/command";
             pubs_[controller] = nh_.advertise<std_msgs::Float64>(topic, 1);
         }
 
         // 订阅关节状态
-        sub_ = nh_.subscribe("/robot_arm/joint_states", 1, &MimicRelay::jointStateCallback, this);
+        // 修改话题前缀：从 /robot_arm/joint_states 改为 /arm/robot_arm/joint_states
+        // 或者使用相对路径 "joint_states"，因为 launch 文件里已经做了 remap
+        // 但为了保险起见，既然我们知道绝对路径，直接写绝对路径最稳妥
+        sub_ = nh_.subscribe("/arm/robot_arm/joint_states", 1, &MimicRelay::jointStateCallback, this);
         
         ROS_INFO("Mimic Relay Node (C++) Started. Master: %s", master_joint_name_.c_str());
     }

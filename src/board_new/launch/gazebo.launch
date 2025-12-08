@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- 1. 启动 Gazebo 服务器和客户端 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="verbose" value="true"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- 2. 将 URDF 文件内容加载到参数服务器 'robot_description' -->
+  <param name="robot_description" textfile="$(find board_new)/urdf/board_new.urdf" />
+
+  <!-- 3. 启动 Robot State Publisher -->
+  <!-- 它会读取参数服务器上的 robot_description 并发布 TF -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+
+  <!-- 4. 静态坐标变换 -->
+  <!-- 格式: x y z qx qy qz qw parent_frame child_frame -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="tf_footprint_base" 
+        args="0 0 0 0 0 0 1 base_link base_footprint" />
+
+  <!-- 5. 在 Gazebo 中生成模型 -->
+  <!-- -param robot_description 表示从参数服务器读取模型描述 -->
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description -model board_new -x 0 -y 0 -z 1.5 -R 0 -P 0 -Y 0" 
+        output="screen" />
+
+</launch>

@@ -11,6 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager
   joint_state_controller
   robot_state_publisher
+  roscpp
+  std_msgs
+  tf2_ros
+  tf2_geometry_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -212,3 +217,7 @@ add_executable(mimic_relay_node src/mimic_relay.cpp)
 target_link_libraries(mimic_relay_node
   ${catkin_LIBRARIES}
 )
+
+# 编译 pick_piece 节点
+add_executable(pick_piece src/pick_piece.cpp)
+target_link_libraries(pick_piece ${catkin_LIBRARIES})

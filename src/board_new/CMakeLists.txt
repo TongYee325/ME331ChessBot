@@ -1,17 +1,14 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.0.2)
 project(board_new)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+# 寻找 catkin 构建系统
+find_package(catkin REQUIRED)
 
-# 寻找构建系统
-find_package(ament_cmake REQUIRED)
+# 声明 catkin 包
+catkin_package()
 
 # ---------------------------------------------------------
-# 关键步骤：安装资源文件
-# 这会将 launch, meshes, urdf 文件夹复制到 install/share/board 下
-# 这样 package://board/meshes/... 路径才能生效
+# 安装资源文件
 # ---------------------------------------------------------
 install(DIRECTORY
   launch
@@ -19,5 +16,3 @@ install(DIRECTORY
   urdf
   DESTINATION share/${PROJECT_NAME}
 )
-
-ament_package()

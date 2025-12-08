@@ -8,15 +8,18 @@
   <maintainer email="user@todo.todo">User</maintainer>
   <license>TODO: License declaration</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <!-- 将 ament_cmake 改为 catkin -->
+  <buildtool_depend>catkin</buildtool_depend>
 
   <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>rviz2</exec_depend>
+  <!-- rviz2 改为 rviz -->
+  <exec_depend>rviz</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>ros2topic</exec_depend>
+  <!-- 移除 ros2topic -->
+
+  <!-- 对于 catkin 包，通常不需要 export build_type -->
   <export>
-    <build_type>ament_cmake</build_type>
   </export>
 </package>

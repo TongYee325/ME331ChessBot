@@ -1,0 +1,60 @@
+<launch>
+  <!-- 1. 加载 XACRO 到参数服务器 -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro --inorder '$(find robot_arm)/urdf/robot_arm.xacro'" />
+
+  <!-- 2. 发布状态 (这是全局的 RSP，用于发布 TF) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" value="arm" />
+    <!-- 这里的 remap 取决于控制器发布到哪里，稍后解释 -->
+    <remap from="/joint_states" to="robot_arm/joint_states" />
+  </node>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_arm" 
+        args="0 0 0 0 0 0 1 world arm/base_link" />
+
+  <!-- 关键修改 1: 明确指定 robot_namespace 为 /arm/robot_arm -->
+  <node name="spawn_arm" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description -model robot_arm -x 0 -y 0 -z 0 -robot_namespace /arm/robot_arm"
+        respawn="false" output="screen" />
+
+  <!-- ========================================================== -->
+  <!-- 4. 启动控制器和 Mimic 节点 (仿照 robot_arm_control.launch) -->
+  <!-- ========================================================== -->
+  
+
+
+  <!-- 加载控制器参数 -->
+  <!-- 注意：因为我们在 <group ns="arm"> 下，所以参数会加载到 /arm/robot_arm/... -->
+  <!-- 假设 yaml 文件顶层键是 robot_arm -->
+  <rosparam file="$(find robot_arm_control)/config/robot_arm_control.yaml" command="load"/>
+
+  <!-- 启动控制器 Spawner -->
+  <!-- 关键修改：添加 ns="robot_arm"，这样它会在 /arm/robot_arm 命名空间下寻找参数和控制器管理器 -->
+  <!-- args 里不需要再加 robot_arm/ 前缀了，因为 ns 已经指定了 -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="robot_arm" 
+    args="joint1_position_controller
+          joint2_position_controller
+          joint3_position_controller
+          joint4_position_controller
+          joint5_position_controller
+          joint6left_position_controller
+          joint7left_position_controller
+          joint8left_position_controller
+          joint9right_position_controller
+          joint10right_position_controller
+          joint11right_position_controller
+          joint_state_controller"/>
+
+  <!-- 启动 Mimic 接力节点 -->
+  <!-- 同样需要注意话题订阅，如果 mimic 节点订阅的是相对路径 "joint_states"，它会订阅到 /arm/joint_states -->
+  <!-- 但控制器发布的是 /arm/robot_arm/joint_states -->
+  <!-- 所以可能需要重映射 -->
+  <node name="mimic_relay_node" pkg="robot_arm_control" type="mimic_relay_node" output="screen">
+    <param name="master_joint" value="joint6_left" />
+    <remap from="joint_states" to="robot_arm/joint_states"/>
+  </node>
+
+</launch>

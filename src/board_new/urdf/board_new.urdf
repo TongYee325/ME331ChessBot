@@ -1,17 +1,18 @@
 <!--?xml version="1.0" encoding="utf-8"?-->
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
-     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
-     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+
 <robot
   name="board_new">
  
-  <!-- 添加世界坐标系 -->
+  <!-- 添加世界坐标系链接 -->
   <link name="world"/>
   
-  <joint name="world_to_base" type="fixed">
+  <!-- 将 base_link 固定到 world -->
+  <joint name="fixed_to_world" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="1.5708 0 0"/>  <!-- 整个系统旋转 -->
+    <!-- 这里不需要 origin，因为我们在 spawn_model 时会指定位置 -->
+    <!-- 如果需要微调高度以避免 Z-fighting (闪烁)，可以将 z 设为稍微高一点点，例如 0.001 -->
+    <origin xyz="0 0 0.02" rpy="1.5708 0 0"/> 
   </joint>
 
   <link
