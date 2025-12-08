@@ -49,12 +49,19 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>geometry_msgs</depend>
-  <depend>tf2_geometry_msgs</depend> <!-- 必须添加这个 -->
+  <depend>tf2_geometry_msgs</depend>
 
+  <!-- 新增以下依赖 -->
+  <build_depend>message_generation</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
+  
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

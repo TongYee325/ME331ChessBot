@@ -1,15 +1,17 @@
 <launch>
-  <!-- 1. 加载 URDF 到参数服务器 -->
-  <param name="robot_description" textfile="$(find board_new)/urdf/board_new.urdf" />
+  <!-- 1. 加载 URDF 到参数服务器 (可选，供参考) -->
+  <param name="robot_description" textfile="$(find board_new)/urdf/chessboard.urdf" />
 
-  <!-- 2. 发布状态 -->
+  <!-- 2. 发布状态 (可选，仅用于 Rviz 可视化棋盘基座) -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
     <param name="tf_prefix" value="board" />
   </node>
   
-  <!-- 4. 在 Gazebo 中生成模型 -->
-  <node name="spawn_board" pkg="gazebo_ros" type="spawn_model"
-        args="-urdf -param robot_description -model board_new -x 0.3 -y 0 -z 0 -Y 1.5708" 
-        output="screen" />
+  <!-- 3. 启动 C++ 节点生成棋盘和棋子 -->
+  <node name="spawn_chess_pieces" pkg="board_new" type="spawn_chess_pieces" output="screen" />
+  
+  <!-- 启动棋子状态管理器 (发布 TF) -->
+  <node name="pieces_manager" pkg="board_new" type="pieces_manager" output="screen" />
+  
 </launch>

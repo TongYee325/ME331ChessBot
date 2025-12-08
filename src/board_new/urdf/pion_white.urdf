@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="pion">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="5.55111512312578E-17 0.0106222958974551 -1.7055801215804E-14" rpy="0 0 0" />
+      <mass value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07" ixy="-3.26879966837887E-23" ixz="-2.97708148562947E-23"
+        iyy="2.09083285069225E-07" iyz="2.66692949158579E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/pion1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/pion1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+</robot>

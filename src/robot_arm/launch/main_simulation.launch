@@ -13,12 +13,23 @@
     <include file="$(find robot_arm)/launch/arm_only.launch" />
   </group>
   
-  
+  <!-- 新增：在顶层发布 world -> arm/base_link 的变换 -->
+  <!-- 这样可以确保它不会受到 group ns="arm" 的影响 -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="global_world_to_arm" 
+        args="0 0 0 0 0 0 1 world arm/base_link" />
+
   <!-- 3. 加载 棋盘 (使用命名空间隔离) -->
   <group ns="board">
     <include file="$(find board_new)/launch/board_only.launch" />
   </group>
 
-
+  <!-- 4. 启动 核心控制节点 (新增部分) -->
+  <!-- 运动规划器：提供路径规划服务 -->
+  <node name="motion_planner_node" pkg="robot_arm_control" type="motion_planner_node" output="screen" 
+        launch-prefix="gnome-terminal --" />
+  
+  <!-- 状态机：负责流程控制 -->
+  <node name="fsm_node" pkg="robot_arm_control" type="fsm_node" output="screen" 
+        launch-prefix="gnome-terminal --" />
 
 </launch>

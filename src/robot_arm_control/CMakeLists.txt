@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2_geometry_msgs
   geometry_msgs
+  trajectory_msgs    # 新增
+  message_generation # 新增
 )
 
 ## System dependencies are found with CMake's conventions
@@ -59,11 +61,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  GetJointTrajectory.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -73,10 +74,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs
+  trajectory_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -112,6 +114,7 @@ catkin_package(
 #  LIBRARIES robot_arm_control
 #  CATKIN_DEPENDS controller_manager joint_state_controller robot_state_publisher
 #  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf2_ros trajectory_msgs message_runtime
 )
 
 ###########
@@ -221,3 +224,13 @@ target_link_libraries(mimic_relay_node
 # 编译 pick_piece 节点
 add_executable(pick_piece src/pick_piece.cpp)
 target_link_libraries(pick_piece ${catkin_LIBRARIES})
+
+# Motion Planner Node
+add_executable(motion_planner_node src/motion_planner.cpp)
+add_dependencies(motion_planner_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(motion_planner_node ${catkin_LIBRARIES})
+
+# FSM Node
+add_executable(fsm_node src/fsm_node.cpp)
+add_dependencies(fsm_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(fsm_node ${catkin_LIBRARIES})

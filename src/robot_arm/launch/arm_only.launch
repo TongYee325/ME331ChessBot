@@ -11,8 +11,10 @@
     <remap from="/joint_states" to="robot_arm/joint_states" />
   </node>
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_arm" 
-        args="0 0 0 0 0 0 1 world arm/base_link" />
+  <!-- 注意：args 最后的 "world" 不要加前缀，"arm/base_link" 要匹配 robot_state_publisher 的输出 -->
+  <!-- 如果是在 group ns="arm" 下运行，这个节点名会变成 /arm/world_to_arm，没关系 -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_arm" 
+        args="0 0 0 0 0 0 1 world arm/base_link" /> -->
 
   <!-- 关键修改 1: 明确指定 robot_namespace 为 /arm/robot_arm -->
   <node name="spawn_arm" pkg="gazebo_ros" type="spawn_model"
