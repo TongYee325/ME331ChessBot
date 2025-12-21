@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="gui" default="True" />
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ur5_moveit_config)/config/gazebo_ur5.xacro" />
+  
+  <!-- 修改开始：根据 gui 参数决定启动带界面的节点 -->
+  <node if="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  <node unless="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <!-- 修改结束 -->
+  
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur5_moveit_config)/config/debug.rviz" required="true" />
+
+</launch>

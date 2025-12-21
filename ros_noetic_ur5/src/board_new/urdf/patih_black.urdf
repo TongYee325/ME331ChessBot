@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="patih">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="2.77555756156289E-17 0.0143255951678129 -1.70696790036118E-14" rpy="0 0 0" />
+      <mass value="0.00661332052175699" />
+      <inertia
+        ixx="1.23616318894567E-06" ixy="-5.94826960602266E-23" ixz="-8.66123826116076E-23"
+        iyy="2.56903760063994E-07" iyz="9.11300481436128E-23"
+        izz="1.23616318894567E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/patih1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/patih1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+</robot>

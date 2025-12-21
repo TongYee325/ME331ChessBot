@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="benteng">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0.0139442329834186 -1.70696790036118E-14" rpy="0 0 0" />
+      <mass value="0.00689524826732993" />
+      <inertia
+        ixx="1.04076437670444E-06" ixy="1.37528750650064E-22" ixz="-9.38591097409481E-24"
+        iyy="3.15865825931253E-07" iyz="1.97940591704879E-23"
+        izz="1.04076437670444E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/benteng1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/benteng1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+</robot>

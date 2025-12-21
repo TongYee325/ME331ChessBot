@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="ster">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0.0174505472884713 -1.70696790036118E-14" rpy="0 0 0" />
+      <mass value="0.00865270280186261" />
+      <inertia
+        ixx="2.16656562383586E-06" ixy="-1.64389636943967E-23" ixz="-1.13211186497121E-22"
+        iyy="3.45899940845713E-07" iyz="-2.3782736932399E-23"
+        izz="2.16656562383586E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/ster1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/ster1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+</robot>

@@ -1,0 +1,21 @@
+<launch>
+  <!-- 1. 加载 URDF 到参数服务器 (可选，供参考) -->
+  <param name="robot_description" textfile="$(find board_new)/urdf/chessboard.urdf" />
+
+  <!-- 2. 发布状态 (可选，仅用于 Rviz 可视化棋盘基座) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" value="board" />
+  </node>
+  
+  <!-- 3. 启动 C++ 节点生成棋盘和棋子 -->
+  <node name="spawn_chess_pieces" pkg="board_new" type="spawn_chess_pieces" output="screen" />
+  
+  <!-- 启动棋子状态管理器 (发布 TF 和 MoveIt 对象) -->
+  <node name="pieces_manager" pkg="board_new" type="pieces_manager" output="screen">
+    <!-- 关键修改：将话题重映射到全局命名空间，以便 MoveIt 能收到 -->
+    <remap from="collision_object" to="/collision_object" />
+    <remap from="attached_collision_object" to="/attached_collision_object" />
+  </node>
+  
+</launch>

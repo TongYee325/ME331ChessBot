@@ -1,0 +1,249 @@
+#include <ros/ros.h>
+#include <moveit/move_group_interface/move_group_interface.h>
+#include <tf2_ros/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cmath>
+
+// 辅助函数：角度转弧度
+double deg2rad(double deg) {
+    return deg * M_PI / 180.0;
+}
+
+// 辅助函数：鲁棒的运动规划与执行 (关节空间规划)
+bool robust_move(moveit::planning_interface::MoveGroupInterface& move_group, geometry_msgs::Pose& target_pose) {
+    move_group.setPoseTarget(target_pose);
+    
+    ROS_INFO_STREAM("planning to " << target_pose.position.x << "," <<
+              target_pose.position.y << "," <<
+              target_pose.position.z);
+              
+    std::vector<std::string> planner_ids = { "RRTConnect","RRTstar", "PRM", "TRRT"};
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    
+    for (const auto& planner_id : planner_ids) {
+        move_group.setPlannerId(planner_id);
+        move_group.setPlanningTime(7.0); 
+        
+        if (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+            move_group.execute(my_plan);
+            return true;
+        }
+    }
+    ROS_ERROR("All planners failed for target pose.");
+    return false;
+}
+
+// 新增辅助函数：笛卡尔空间直线运动
+bool cartesian_move(moveit::planning_interface::MoveGroupInterface& move_group, const geometry_msgs::Pose& target_pose) {
+    std::vector<geometry_msgs::Pose> waypoints;
+    waypoints.push_back(target_pose);
+
+    moveit_msgs::RobotTrajectory trajectory;
+    const double jump_threshold = 0.0; // 禁用跳跃检测
+    const double eef_step = 0.01;      // 1cm 插值步长
+
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+
+    ROS_INFO_STREAM("Cartesian path fraction: " << fraction * 100.0 << "%");
+
+    if (fraction >= 0.95) { // 允许微小误差
+        moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+        my_plan.trajectory_ = trajectory;
+        move_group.execute(my_plan);
+        return true;
+    } else {
+        ROS_WARN("Cartesian path incomplete (fraction < 0.95). Aborting.");
+        return false;
+    }
+}
+
+void speedUp(moveit::planning_interface::MoveGroupInterface& action_group){
+    action_group.setMaxVelocityScalingFactor(1.0); 
+    action_group.setMaxAccelerationScalingFactor(1.0);
+}
+
+void speedDown(moveit::planning_interface::MoveGroupInterface& action_group){
+    action_group.setMaxVelocityScalingFactor(0.001); 
+    action_group.setMaxAccelerationScalingFactor(0.001);
+}
+// -----------------
+
+// --- 核心函数：执行抓取和放置序列 ---
+void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_group, 
+                            moveit::planning_interface::MoveGroupInterface& gripper_group, 
+                            geometry_msgs::Pose& pick_pose, 
+                            geometry_msgs::Pose& place_pose) 
+{
+    ROS_INFO(">>> Starting Pick and Place Sequence <<<");
+
+
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, 0);   
+    pick_pose.orientation = tf2::toMsg(q);
+    place_pose.orientation = tf2::toMsg(q);
+
+
+    // 1. 移动到 up 位姿 (关节空间)
+    ROS_INFO("1. Moving to 'up'");
+    speedUp(arm_group);
+    arm_group.setNamedTarget("up");
+    arm_group.move();
+
+    // 2. 移动到 pick_pose 上方 0.15m
+    ROS_INFO("2. Moving to Pre-Pick (0.15m above)");
+    speedUp(arm_group);
+    geometry_msgs::Pose pre_pick = pick_pose;
+    pre_pick.position.z += 0.15;
+
+    if (!robust_move(arm_group, pre_pick)) return;
+
+    // 3. 打开夹爪至 33 度
+    ROS_INFO("3. Opening gripper (33 deg)");
+    gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(33.0));
+    gripper_group.move();
+
+    // 4. 移动到 pick_pose (笛卡尔空间 - 垂直下落)
+    ROS_INFO("4. Moving to Pick Pose [Cartesian]");
+    speedDown(arm_group);
+    if (!cartesian_move(arm_group, pick_pose)) {
+        ROS_ERROR("Failed to approach pick pose.");
+        return;
+    }
+
+
+    // 5. 合并夹爪至 37 度 (抓取)
+    ROS_INFO("5. Closing gripper (37 deg)");
+    gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(37.0));
+    gripper_group.move();
+
+    // 6. 移动到 pick_pose 上方 0.15m (笛卡尔空间 - 垂直抬起)
+    ROS_INFO("6. Lifting up (0.15m above) [Cartesian]");
+    speedDown(arm_group);
+    if (!cartesian_move(arm_group, pre_pick)) return;
+
+    // 7. 移动到 place_pose 上方 0.15m (笛卡尔空间 - 平移)
+    ROS_INFO("7. Moving to Pre-Place (0.15m above) [Cartesian]");
+    speedUp(arm_group);
+    geometry_msgs::Pose pre_place = place_pose;
+    pre_place.position.z += 0.15;
+    if (!cartesian_move(arm_group, pre_place)) {
+         ROS_WARN("Cartesian move to Pre-Place failed, trying joint space...");
+         if (!robust_move(arm_group, pre_place)) return;
+    }
+
+    // 8. 移动到 place_pose (笛卡尔空间 - 垂直下落)
+    ROS_INFO("8. Moving to Place Pose [Cartesian]");
+    speedDown(arm_group);
+    if (!cartesian_move(arm_group, place_pose)) {
+        ROS_ERROR("Failed to approach place pose.");
+        arm_group.setMaxVelocityScalingFactor(0.8);
+        return;
+    }
+    arm_group.setMaxVelocityScalingFactor(0.8);
+
+    // 9. 打开夹爪至 33 度 (释放)
+    ROS_INFO("9. Opening gripper (33 deg)");
+    gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(33.0));
+    gripper_group.move();
+
+    // 10. 移动到 place_pose 上方 0.15m (撤离)
+    // 这里通常也建议用笛卡尔，保持垂直撤离
+    ROS_INFO("10. Lifting up from Place [Cartesian]");
+    speedDown(arm_group);
+    if (!cartesian_move(arm_group, pre_place)) {
+        robust_move(arm_group, pre_place);
+    }
+
+    // 11. 回到 up 位姿
+    ROS_INFO("11. Returning to 'up'");
+    speedUp(arm_group);
+    arm_group.setNamedTarget("up");
+    arm_group.move();
+
+    ROS_INFO(">>> Pick and Place Complete <<<");
+}
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "move_given_pieces");
+    ros::NodeHandle nh;
+    
+    ros::AsyncSpinner spinner(2);
+    spinner.start();
+
+    static const std::string PLANNING_GROUP = "my_arm";
+    static const std::string GRIPPER_GROUP = "my_gripper";
+
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    moveit::planning_interface::MoveGroupInterface gripper_group(GRIPPER_GROUP);
+    
+    // 初始设置
+    move_group.setMaxVelocityScalingFactor(0.1); 
+    move_group.setMaxAccelerationScalingFactor(0.1);
+    move_group.setPoseReferenceFrame("world");
+    move_group.allowReplanning(true);
+    move_group.setNumPlanningAttempts(100);
+    // 夹爪设置
+    gripper_group.setMaxVelocityScalingFactor(0.1);
+    gripper_group.setMaxAccelerationScalingFactor(0.1);
+
+    // 在 move_group 初始化后添加
+    move_group.setGoalPositionTolerance(0.01); // 允许 1cm 的位置误差
+    move_group.setGoalOrientationTolerance(0.05); // 允许 0.05弧度的角度误差
+    // 增加执行时间，让动作更平缓
+    move_group.setPlanningTime(10.0);
+
+    tf2_ros::Buffer tf_buffer;
+    tf2_ros::TransformListener tf_listener(tf_buffer);
+
+    ROS_INFO("Node started. Waiting for TF data...");
+    ros::Duration(2.0).sleep();
+
+    while (ros::ok()) {
+        std::string piece_name;
+        std::cout << "\n--------------------------------------------------" << std::endl;
+        std::cout << "Enter chess piece name to PICK (e.g., pion1): " << std::endl;
+        std::cout << "> ";
+        if (!(std::cin >> piece_name)) break;
+
+        if (piece_name == "exit" || piece_name == "quit") break;
+
+        geometry_msgs::Pose pick_pose;
+        bool found = false;
+        try {
+            geometry_msgs::TransformStamped transformStamped;
+            transformStamped = tf_buffer.lookupTransform("world", piece_name, ros::Time(0), ros::Duration(1.0));
+
+            pick_pose.position.x = transformStamped.transform.translation.x;
+            pick_pose.position.y = transformStamped.transform.translation.y;
+            pick_pose.position.z = transformStamped.transform.translation.z;
+            // 直接使用棋子姿态，不加 RPY
+            pick_pose.orientation = transformStamped.transform.rotation;
+            found = true;
+        } catch (tf2::TransformException &ex) {
+            ROS_WARN("Could not find transform: %s", ex.what());
+            continue;
+        }
+
+        if (found) {
+            // --- 定义 Place Pose (这里为了测试，暂时设置为 Pick Pose 向 Y 轴偏移 20cm) ---
+            geometry_msgs::Pose place_pose = pick_pose;
+            place_pose.position.y += 0.20; 
+            // 保持与 Pick 相同的姿态
+            place_pose.orientation = pick_pose.orientation;
+
+            ROS_INFO("Pick Pose found. Place Pose set to y+0.2m.");
+            
+            // 调用函数执行序列
+            execute_pick_and_place(move_group, gripper_group, pick_pose, place_pose);
+        }
+    }
+
+    ros::shutdown();
+    return 0;
+}

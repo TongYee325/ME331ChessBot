@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="raja">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-1.04083408558608E-17 0.0195412354536036 -1.70696790036118E-14" rpy="0 0 0" />
+      <mass value="0.00920738167044829" />
+      <inertia
+        ixx="2.83929693808966E-06" ixy="5.25973980598679E-22" ixz="9.23062477775287E-24"
+        iyy="3.53561932265908E-07" iyz="2.84140942564377E-23"
+        izz="2.83929693808966E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/raja1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://board_new/meshes/raja1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+</robot>

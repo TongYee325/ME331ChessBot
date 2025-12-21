@@ -1,0 +1,1690 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+
+<robot
+  name="board_new">
+ 
+  <!-- 添加世界坐标系链接 -->
+  <link name="world"/>
+  
+  <!-- 将 base_link 固定到 world -->
+  <joint name="fixed_to_world" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <!-- 这里不需要 origin，因为我们在 spawn_model 时会指定位置 -->
+    <!-- 如果需要微调高度以避免 Z-fighting (闪烁)，可以将 z 设为稍微高一点点，例如 0.001 -->
+    <origin xyz="0 0 0.02" rpy="1.5708 0 0"/> 
+  </joint>
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="2.59991680962024E-16 -0.00180057250759344 9.22159485035791E-16"
+        rpy="0 0 0" />
+      <mass
+        value="0.5397745" />
+      <inertia
+        ixx="0.0010104424615518"
+        ixy="-5.68823672919161E-21"
+        ixz="-2.83870443202449E-12"
+        iyy="0.00503082062773216"
+        iyz="-4.85459085409541E-08"
+        izz="0.00403664638877451" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="pion1">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.7055801215804E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-3.26879966837887E-23"
+        ixz="-2.97708148562947E-23"
+        iyy="2.09083285069225E-07"
+        iyz="2.66692949158579E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_1"
+    type="fixed">
+    <origin
+      xyz="0.151639999999999 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion1" />
+  </joint>
+  <link
+    name="pion2">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.77219350305791E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.61603114763974E-23"
+        ixz="-1.36349163220758E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-6.7032927568502E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_2"
+    type="fixed">
+    <origin
+      xyz="0.108439999999999 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion2" />
+  </joint>
+  <link
+    name="pion3">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.83741910575463E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-4.05849110163768E-23"
+        ixz="-1.0233527172237E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-3.28893902643641E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_3"
+    type="fixed">
+    <origin
+      xyz="0.0652399999999993 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion3" />
+  </joint>
+  <link
+    name="pion4">
+    <inertial>
+      <origin
+        xyz="5.20417042793042E-17 0.0106222958974552 -1.90125692967058E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.32092358924137E-23"
+        ixz="-1.21541520975641E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-1.0825089483752E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_4"
+    type="fixed">
+    <origin
+      xyz="0.0220399999999993 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion4" />
+  </joint>
+  <link
+    name="pion5">
+    <inertial>
+      <origin
+        xyz="5.20417042793042E-17 0.0106222958974552 -1.96787031114809E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.22564059495016E-23"
+        ixz="-1.21541520975641E-23"
+        iyy="2.09083285069225E-07"
+        iyz="-9.83816675147344E-24"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_5"
+    type="fixed">
+    <origin
+      xyz="-0.0211600000000007 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion5" />
+  </joint>
+  <link
+    name="pion6">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974552 -2.03309591384482E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-4.56944440328927E-23"
+        ixz="-1.29460299681839E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-3.76888328806191E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_6"
+    type="fixed">
+    <origin
+      xyz="-0.0643600000000007 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion6" />
+  </joint>
+  <link
+    name="pion7">
+    <inertial>
+      <origin
+        xyz="2.77555756156289E-17 0.0106222958974552 -2.09832151654155E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.61603114763974E-23"
+        ixz="-1.36349163220758E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-6.7032927568502E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion7.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_7"
+    type="fixed">
+    <origin
+      xyz="-0.107560000000001 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion7" />
+  </joint>
+  <link
+    name="pion8">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974552 -2.16354711923827E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-3.26879966837887E-23"
+        ixz="-2.71858754420665E-23"
+        iyy="2.09083285069225E-07"
+        iyz="2.66692949158579E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion8.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion8.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_8"
+    type="fixed">
+    <origin
+      xyz="-0.150760000000001 0.00200000000000001 0.107060000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion8" />
+  </joint>
+  <link
+    name="pion9">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974552 -1.25038868148408E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="4.64679841727202E-23"
+        ixz="9.45488365844947E-24"
+        iyy="2.09083285069225E-07"
+        iyz="-3.89829630753822E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion9.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion9.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_9"
+    type="fixed">
+    <origin
+      xyz="-0.150760000000001 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion9" />
+  </joint>
+  <link
+    name="pion10">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974552 -1.31422650540003E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="3.80897632295363E-24"
+        ixz="-1.64352731389091E-25"
+        iyy="2.09083285069227E-07"
+        iyz="-1.97692226174703E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion10.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion10.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_10"
+    type="fixed">
+    <origin
+      xyz="-0.107560000000001 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion10" />
+  </joint>
+  <link
+    name="pion11">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974552 -1.38083988687754E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="3.81524818338502E-23"
+        ixz="2.87367322544659E-23"
+        iyy="2.09083285069227E-07"
+        iyz="2.10092874245822E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion11.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion11.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_11"
+    type="fixed">
+    <origin
+      xyz="-0.0643600000000007 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion11" />
+  </joint>
+  <link
+    name="pion12">
+    <inertial>
+      <origin
+        xyz="5.20417042793042E-17 0.0106222958974552 -1.44606548957427E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.28873928351933E-24"
+        ixz="1.2347236223156E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-2.4990973322584E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion12.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion12.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_12"
+    type="fixed">
+    <origin
+      xyz="-0.0211600000000007 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion12" />
+  </joint>
+  <link
+    name="pion13">
+    <inertial>
+      <origin
+        xyz="5.20417042793042E-17 0.0106222958974552 -1.51267887105178E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="-1.28873928351936E-24"
+        ixz="4.29260174997181E-23"
+        iyy="2.09083285069225E-07"
+        iyz="-7.83485004068994E-24"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion13.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion13.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_13"
+    type="fixed">
+    <origin
+      xyz="0.0220399999999993 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion13" />
+  </joint>
+  <link
+    name="pion14">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.57512891618694E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="3.35938143553673E-23"
+        ixz="-4.64628953838639E-24"
+        iyy="2.09083285069227E-07"
+        iyz="3.78844729355158E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion14.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion14.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_14"
+    type="fixed">
+    <origin
+      xyz="0.0652399999999993 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion14" />
+  </joint>
+  <link
+    name="pion15">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.64035451888367E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="3.80897632295362E-24"
+        ixz="2.88432127258723E-23"
+        iyy="2.09083285069227E-07"
+        iyz="-3.36847737927125E-24"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion15.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion15.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_15"
+    type="fixed">
+    <origin
+      xyz="0.108439999999999 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion15" />
+  </joint>
+  <link
+    name="pion16">
+    <inertial>
+      <origin
+        xyz="5.55111512312578E-17 0.0106222958974551 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00514941010722538" />
+      <inertia
+        ixx="5.74831681295525E-07"
+        ixy="4.64679841727202E-23"
+        ixz="1.23593813464983E-23"
+        iyy="2.09083285069225E-07"
+        iyz="-2.57285408302781E-23"
+        izz="5.74831681295525E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion16.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/pion16.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="p_16"
+    type="fixed">
+    <origin
+      xyz="0.151639999999999 0.00200000000000001 -0.107059999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="pion16" />
+  </joint>
+  <link
+    name="benteng1">
+    <inertial>
+      <origin
+        xyz="0 0.0139442329834186 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00689524826732993" />
+      <inertia
+        ixx="1.04076437670444E-06"
+        ixy="1.37528750650064E-22"
+        ixz="-9.38591097409481E-24"
+        iyy="3.15865825931253E-07"
+        iyz="1.97940591704879E-23"
+        izz="1.04076437670444E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ben_1"
+    type="fixed">
+    <origin
+      xyz="0.151639999999999 0.002 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="benteng1" />
+  </joint>
+  <link
+    name="benteng2">
+    <inertial>
+      <origin
+        xyz="-2.77555756156289E-17 0.0139442329834186 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00689524826732993" />
+      <inertia
+        ixx="1.04076437670444E-06"
+        ixy="-1.38542779878044E-22"
+        ixz="-9.37166755402563E-24"
+        iyy="3.15865825931253E-07"
+        iyz="-1.64119530605539E-23"
+        izz="1.04076437670444E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ben_2"
+    type="fixed">
+    <origin
+      xyz="-0.152390000000001 0.002 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="benteng2" />
+  </joint>
+  <link
+    name="benteng3">
+    <inertial>
+      <origin
+        xyz="-2.77555756156289E-17 0.0139442329834186 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00689524826732993" />
+      <inertia
+        ixx="1.04076437670444E-06"
+        ixy="-1.37211213055297E-22"
+        ixz="-9.72507723956464E-24"
+        iyy="3.15865825931253E-07"
+        iyz="-2.00484126878895E-23"
+        izz="1.04076437670444E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ben_3"
+    type="fixed">
+    <origin
+      xyz="-0.152390000000001 0.002 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="benteng3" />
+  </joint>
+  <link
+    name="benteng4">
+    <inertial>
+      <origin
+        xyz="0 0.0139442329834186 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00689524826732993" />
+      <inertia
+        ixx="1.04076437670444E-06"
+        ixy="1.3758890005873E-22"
+        ixz="-9.61779215645458E-24"
+        iyy="3.15865825931253E-07"
+        iyz="2.08618821002094E-23"
+        izz="1.04076437670444E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/benteng4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ben_4"
+    type="fixed">
+    <origin
+      xyz="0.151639999999999 0.002 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="benteng4" />
+  </joint>
+  <link
+    name="jaran1">
+    <inertial>
+      <origin
+        xyz="4.79904925043684E-06 0.0174746975557619 1.79671111603941E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0120164146277105" />
+      <inertia
+        ixx="1.96991136313716E-06"
+        ixy="4.61982066145161E-09"
+        ixz="-3.04490688432334E-08"
+        iyy="6.48940622104474E-07"
+        iyz="1.72089600129848E-08"
+        izz="1.86463419010765E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ja_1"
+    type="fixed">
+    <origin
+      xyz="0.106809999999999 0.00200000000000006 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="jaran1" />
+  </joint>
+  <link
+    name="jaran2">
+    <inertial>
+      <origin
+        xyz="-4.84268065516213E-06 0.0174746975525759 1.79553749963257E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.01201641463504" />
+      <inertia
+        ixx="1.96990922984996E-06"
+        ixy="-4.61849377319051E-09"
+        ixz="3.04527605172468E-08"
+        iyy="6.48940626338857E-07"
+        iyz="1.72093193241882E-08"
+        izz="1.86463632012942E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ja_2"
+    type="fixed">
+    <origin
+      xyz="-0.107560000000001 0.00200000000000006 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="jaran2" />
+  </joint>
+  <link
+    name="jaran3">
+    <inertial>
+      <origin
+        xyz="-4.79904925045072E-06 0.0174746975557618 -1.79671111945334E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0120164146277105" />
+      <inertia
+        ixx="1.96991136313716E-06"
+        ixy="-4.6198206614517E-09"
+        ixz="-3.04490688432333E-08"
+        iyy="6.48940622104473E-07"
+        iyz="-1.72089600129852E-08"
+        izz="1.86463419010765E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ja_3"
+    type="fixed">
+    <origin
+      xyz="-0.107560000000001 0.00200000000000006 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="jaran3" />
+  </joint>
+  <link
+    name="jaran4">
+    <inertial>
+      <origin
+        xyz="4.84268065516213E-06 0.0174746975525759 -1.79553750304651E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.01201641463504" />
+      <inertia
+        ixx="1.96990922984996E-06"
+        ixy="4.61849377319023E-09"
+        ixz="3.0452760517247E-08"
+        iyy="6.48940626338857E-07"
+        iyz="-1.72093193241881E-08"
+        izz="1.86463632012942E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/jaran4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ja_4"
+    type="fixed">
+    <origin
+      xyz="0.106809999999999 0.00200000000000005 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="jaran4" />
+  </joint>
+  <link
+    name="patih1">
+    <inertial>
+      <origin
+        xyz="2.77555756156289E-17 0.0143255951678129 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00661332052175699" />
+      <inertia
+        ixx="1.23616318894567E-06"
+        ixy="-5.94826960602266E-23"
+        ixz="-8.66123826116076E-23"
+        iyy="2.56903760063994E-07"
+        iyz="9.11300481436128E-23"
+        izz="1.23616318894567E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pa_1"
+    type="fixed">
+    <origin
+      xyz="0.0639599999999994 0.00200000000000001 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="patih1" />
+  </joint>
+  <link
+    name="patih2">
+    <inertial>
+      <origin
+        xyz="-2.77555756156289E-17 0.0143255951678129 -1.70974345792274E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00661332052175699" />
+      <inertia
+        ixx="1.23616318894567E-06"
+        ixy="-1.21773839375848E-22"
+        ixz="1.93303892931101E-24"
+        iyy="2.56903760063994E-07"
+        iyz="6.11874885667466E-23"
+        izz="1.23616318894567E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pa_2"
+    type="fixed">
+    <origin
+      xyz="-0.0647100000000014 0.00200000000000001 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="patih2" />
+  </joint>
+  <link
+    name="patih3">
+    <inertial>
+      <origin
+        xyz="-2.77555756156289E-17 0.0143255951678129 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00661332052175699" />
+      <inertia
+        ixx="1.23616318894567E-06"
+        ixy="-4.01215739535397E-23"
+        ixz="-1.2285403273913E-22"
+        iyy="2.56903760063994E-07"
+        iyz="-8.36827525922368E-23"
+        izz="1.23616318894567E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pa_3"
+    type="fixed">
+    <origin
+      xyz="-0.0647100000000014 0.00200000000000001 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="patih3" />
+  </joint>
+  <link
+    name="patih4">
+    <inertial>
+      <origin
+        xyz="2.77555756156289E-17 0.0143255951678129 -1.70419234279962E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00661332052175699" />
+      <inertia
+        ixx="1.23616318894567E-06"
+        ixy="6.18031108580885E-23"
+        ixz="4.46517488179933E-23"
+        iyy="2.56903760063994E-07"
+        iyz="-6.14180999308485E-23"
+        izz="1.23616318894567E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/patih4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pa_4"
+    type="fixed">
+    <origin
+      xyz="0.0639599999999994 0.00200000000000001 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="patih4" />
+  </joint>
+  <link
+    name="ster1">
+    <inertial>
+      <origin
+        xyz="0 0.0174505472884713 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00865270280186261" />
+      <inertia
+        ixx="2.16656562383586E-06"
+        ixy="-1.64389636943967E-23"
+        ixz="-1.13211186497121E-22"
+        iyy="3.45899940845713E-07"
+        iyz="-2.3782736932399E-23"
+        izz="2.16656562383586E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/ster1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/ster1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="st_1"
+    type="fixed">
+    <origin
+      xyz="-0.0218000000000006 0.00200000000000001 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="ster1" />
+  </joint>
+  <link
+    name="ster2">
+    <inertial>
+      <origin
+        xyz="0 0.0174505472884713 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00865270280186261" />
+      <inertia
+        ixx="2.16656562383586E-06"
+        ixy="7.99563102808249E-23"
+        ixz="-1.21800451944587E-22"
+        iyy="3.45899940845714E-07"
+        iyz="5.56169227343041E-23"
+        izz="2.16656562383586E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/ster2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/ster2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="st_2"
+    type="fixed">
+    <origin
+      xyz="-0.0218000000000006 0.00200000000000001 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="ster2" />
+  </joint>
+  <link
+    name="raja1">
+    <inertial>
+      <origin
+        xyz="-1.04083408558608E-17 0.0195412354536036 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00920738167044829" />
+      <inertia
+        ixx="2.83929693808966E-06"
+        ixy="5.25973980598679E-22"
+        ixz="9.23062477775287E-24"
+        iyy="3.53561932265908E-07"
+        iyz="2.84140942564377E-23"
+        izz="2.83929693808966E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/raja1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/raja1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ra_1"
+    type="fixed">
+    <origin
+      xyz="0.0210799999999994 0.00200000000000001 0.151500000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="raja1" />
+  </joint>
+  <link
+    name="raja2">
+    <inertial>
+      <origin
+        xyz="-3.46944695195361E-18 0.0195412354536036 -1.70696790036118E-14"
+        rpy="0 0 0" />
+      <mass
+        value="0.00920738167044829" />
+      <inertia
+        ixx="2.83929693808965E-06"
+        ixy="6.1012401659607E-22"
+        ixz="-4.94983586082026E-24"
+        iyy="3.53561932265886E-07"
+        iyz="-3.09549549244307E-23"
+        izz="2.83929693808965E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/raja2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://board_new/meshes/raja2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ra_2"
+    type="fixed">
+    <origin
+      xyz="0.0210799999999994 0.00200000000000001 -0.151499999999999"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="raja2" />
+  </joint>
+</robot>

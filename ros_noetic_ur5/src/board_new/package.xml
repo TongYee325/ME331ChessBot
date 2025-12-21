@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>board_new</name>
+  <version>0.0.1</version>
+  <description>The board robot description package</description>
+  
+  <maintainer email="user@todo.todo">User</maintainer>
+  <license>TODO: License declaration</license>
+
+  <!-- 将 ament_cmake 改为 catkin -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend> <!-- 添加这一行 -->
+  <build_depend>gazebo_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>tf2</build_depend>
+  
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>roslib</exec_depend> <!-- 添加这一行 -->
+  <exec_depend>gazebo_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <!-- rviz2 改为 rviz -->
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  
+  <!-- 添加以下依赖 -->
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_msgs</depend>
+  <depend>geometric_shapes</depend>
+
+  <!-- 对于 catkin 包，通常不需要 export build_type -->
+  <export>
+  </export>
+</package>
