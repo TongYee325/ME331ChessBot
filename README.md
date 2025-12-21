@@ -57,11 +57,11 @@ Enter chess piece name to PICK (e.g., pion1):
 
 可尝试调整 `grasp-fix` 插件参数（Gazebo 抓取稳定性相关）：
 
-文件路径（相对仓库根目录）：
+文件路径：
 ```
-ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
+ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
 ```
-建议搜索 `grasp-fix` 或插件名称定位对应配置块（不依赖固定行号，避免不同版本行号变化）。
+建议关注 **第 899–918 行**附近的 grasp-fix 插件配置（show/hide 行号以便定位）。
 
 常见参数含义（不同版本命名可能略有差异，以文件内实际字段为准）：
 
@@ -85,6 +85,6 @@ ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
 
 ### Demo 视频
 
-- 视频位置（相对仓库根目录）：`videos/夹取棋子.webm`
+- 视频位置：`ME331ChessBot/videos/夹取棋子.webm`
 - 在 README 中可直接引用（相对路径）：
-    - [夹取棋子 Demo（webm）](videos/夹取棋子.webm)
+    ![DemoVideo](videos/夹取棋子.webm)
