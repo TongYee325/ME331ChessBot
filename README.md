@@ -87,4 +87,4 @@ ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazeb
 
 - 视频位置：`ME331ChessBot/videos/夹取棋子.webm`
 - 在 README 中可直接引用（相对路径）：
-    ![DemoVideo](videos/夹取棋子.webm)
+    ![DemoVideo](videos/demo.mp4)
