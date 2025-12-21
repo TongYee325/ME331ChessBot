@@ -3,19 +3,19 @@
 
 ### Quick Start（ROS Noetic + UR5 + Gazebo）
 
-以下流程适用于 `ME331ChessBot/ros_noetic_ur5` 工作空间。
+以下流程适用于本仓库下的 `ros_noetic_ur5` 工作空间（请根据你的实际路径调整）。
 
 1. **进入 Noetic 工作空间并编译**
 ```bash
-cd /home/tongyee/git_hub/ME331ChessBot/ros_noetic_ur5
+cd <path-to-repo>/ros_noetic_ur5
 catkin_make
 source devel/setup.bash
 ```
 
 2. **打开 3 个终端，并在每个终端都 source 环境**
-> 每个新终端都需要重新 `source` 一次，否则找不到 ROS package / node。
+> 每个新终端都需要重新 `source` 一次，否则可能找不到 ROS package / node。
 ```bash
-cd /home/tongyee/git_hub/ME331ChessBot/ros_noetic_ur5
+cd <path-to-repo>/ros_noetic_ur5
 source devel/setup.bash
 ```
 
@@ -23,13 +23,18 @@ source devel/setup.bash
 ```bash
 roslaunch ur5_moveit_config demo_gazebo.launch
 ```
-等待大约 **7 秒**，确认 Gazebo 中棋子全部生成完成后再继续。
+等待 Gazebo 中棋子全部生成完成后再继续（通常需要数秒）。
 
 4. **终端 2：发布棋子位姿信息（注意脚本路径）**
 ```bash
-python3 ./src/board_new/src/simple_manager.py
+python3 <path-to-repo>/ros_noetic_ur5/src/board_new/src/simple_manager.py
 ```
 该脚本用于持续发布棋子位姿信息（供运动规划/抓取节点读取）。
+
+> 若已在工作空间根目录（`ros_noetic_ur5`）下，也可使用相对路径：
+```bash
+python3 ./src/board_new/src/simple_manager.py
+```
 
 5. **终端 3：启动抓取并输入要移动的棋子名称**
 ```bash
@@ -52,11 +57,11 @@ Enter chess piece name to PICK (e.g., pion1):
 
 可尝试调整 `grasp-fix` 插件参数（Gazebo 抓取稳定性相关）：
 
-文件路径：
+文件路径（相对仓库根目录）：
 ```
-ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
+ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
 ```
-建议关注 **第 899–918 行**附近的 grasp-fix 插件配置（show/hide 行号以便定位）。
+建议搜索 `grasp-fix` 或插件名称定位对应配置块（不依赖固定行号，避免不同版本行号变化）。
 
 常见参数含义（不同版本命名可能略有差异，以文件内实际字段为准）：
 
@@ -80,6 +85,6 @@ ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazeb
 
 ### Demo 视频
 
-- 视频位置：`ME331ChessBot/videos/夹取棋子.webm`
+- 视频位置（相对仓库根目录）：`videos/夹取棋子.webm`
 - 在 README 中可直接引用（相对路径）：
     - [夹取棋子 Demo（webm）](videos/夹取棋子.webm)
