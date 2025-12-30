@@ -824,18 +824,18 @@
     </link>
     <!-- Improve grasping physics -->
     <gazebo reference="robotiq_85_left_finger_tip_link">
-        <kp>1000000.0</kp>
-        <kd>100.0</kd> <!-- 修改：增加阻尼 (原1.0)，减少接触抖动 -->
-        <mu1>100.0</mu1> <!-- 修改：增加摩擦力 (原1.0) -->
-        <mu2>100.0</mu2> <!-- 修改：增加摩擦力 (原1.0) -->
-        <minDepth>0.001</minDepth>
+        <kp>2e5</kp><!-- 1000000.0-->
+        <kd>20</kd> <!-- 100.0-->
+        <mu1>4.0</mu1> <!--100.0 -->
+        <mu2>4.0</mu2> <!-- 100.0 -->
+        <minDepth>0.002</minDepth>
     </gazebo>
     <gazebo reference="robotiq_85_right_finger_tip_link">
-        <kp>1000000.0</kp>
-        <kd>100.0</kd> <!-- 修改：增加阻尼 (原1.0) -->
-        <mu1>100.0</mu1> <!-- 修改：增加摩擦力 (原1.0) -->
-        <mu2>100.0</mu2> <!-- 修改：增加摩擦力 (原1.0) -->
-        <minDepth>0.001</minDepth>
+        <kp>2e5</kp><!-- 1000000.0-->
+        <kd>20</kd> <!-- 100.0-->
+        <mu1>4.0</mu1> <!-- 100.0 -->
+        <mu2>4.0</mu2> <!-- 100.0 -->
+        <minDepth>0.002</minDepth>
     </gazebo>
     <transmission name="robotiq_85_left_knuckle_trans">
         <type>transmission_interface/SimpleTransmission</type>
@@ -908,10 +908,10 @@
 
            </arm>
        <forces_angle_tolerance>120</forces_angle_tolerance> <!-- 修改：增加角度容差 (原90) -->
-       <update_rate>100</update_rate>
-       <grip_count_threshold>2</grip_count_threshold>
-       <max_grip_count>4</max_grip_count> <!-- 修改：增加保持计数 (原4)，防止瞬间抖动导致松开 -->
-       <release_tolerance>0.003</release_tolerance> <!-- 修改：增加释放容差 (原0.005或更小) -->
+       <update_rate>200</update_rate><!-- 修改：增加更新频率 (原100) -->
+       <grip_count_threshold>3</grip_count_threshold><!-- 修改：增加接触计数阈值 (原2) -->
+       <max_grip_count>12</max_grip_count> <!-- 修改：增加保持计数 (原4)，防止瞬间抖动导致松开 -->
+       <release_tolerance>0.01</release_tolerance> <!-- 修改：增加释放容差 (原0.0016或更小) -->
        <disable_collisions_on_attach>true</disable_collisions_on_attach>
        <contact_topic>__default_topic__</contact_topic>
      </plugin>

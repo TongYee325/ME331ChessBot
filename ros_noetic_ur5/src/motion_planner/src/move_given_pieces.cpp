@@ -67,6 +67,7 @@ void speedUp(moveit::planning_interface::MoveGroupInterface& action_group){
 }
 
 void speedDown(moveit::planning_interface::MoveGroupInterface& action_group){
+
     action_group.setMaxVelocityScalingFactor(0.001); 
     action_group.setMaxAccelerationScalingFactor(0.001);
 }
@@ -118,6 +119,9 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
 
     // 5. 合并夹爪至 37 度 (抓取)
     ROS_INFO("5. Closing gripper (37 deg)");
+    gripper_group.setMaxVelocityScalingFactor(0.05);
+    gripper_group.setMaxAccelerationScalingFactor(0.1);
+
     gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(37.0));
     gripper_group.move();
 
@@ -146,9 +150,11 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
     }
     arm_group.setMaxVelocityScalingFactor(0.8);
 
-    // 9. 打开夹爪至 33 度 (释放)
-    ROS_INFO("9. Opening gripper (33 deg)");
-    gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(33.0));
+    // 9. 打开夹爪至 0.412 rad (释放)
+    ROS_INFO("9. Opening gripper ( 0.412 rad)");
+    gripper_group.setMaxVelocityScalingFactor(0.05);
+    gripper_group.setMaxAccelerationScalingFactor(0.1);
+    gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", 0.412);
     gripper_group.move();
 
     // 10. 移动到 place_pose 上方 0.15m (撤离)
@@ -231,14 +237,42 @@ int main(int argc, char** argv)
         }
 
         if (found) {
-            // --- 定义 Place Pose (这里为了测试，暂时设置为 Pick Pose 向 Y 轴偏移 20cm) ---
-            geometry_msgs::Pose place_pose = pick_pose;
-            place_pose.position.y += 0.20; 
-            // 保持与 Pick 相同的姿态
-            place_pose.orientation = pick_pose.orientation;
+            // --- 定义 Place Pose：支持用户输入目标帧（通过 TF 查找），否则回退到 pick.y + 0.2 ---
+            geometry_msgs::Pose place_pose;
+            std::string place_target;
+            std::cout << "Enter place target frame name or three numbers (x y z):\n> ";
+            std::getline(std::cin >> std::ws, place_target);
 
-            ROS_INFO("Pick Pose found. Place Pose set to y+0.2m.");
-            
+            std::istringstream iss(place_target);
+            double px, py, pz;
+            if ((iss >> px >> py >> pz)) {
+                place_pose.position.x = px;
+                place_pose.position.y = py;
+                if(pz < 0.03) pz = 0.03; // 最小高度限制
+                place_pose.position.z = pz;
+                place_pose.orientation = pick_pose.orientation;
+                ROS_INFO_STREAM("Using manual coordinates: " << px << "," << py << "," << pz);
+            } else if (place_target == "default" || place_target == "auto") {
+                place_pose = pick_pose;
+                place_pose.position.y += 0.20;
+                place_pose.orientation = pick_pose.orientation;
+                ROS_INFO("Using default place offset y+0.2m.");
+            } else {
+                try {
+                    auto place_tf = tf_buffer.lookupTransform("world", place_target, ros::Time(0), ros::Duration(1.0));
+                    place_pose.position.x = place_tf.transform.translation.x;
+                    place_pose.position.y = place_tf.transform.translation.y;
+                    place_pose.position.z = place_tf.transform.translation.z;
+                    place_pose.orientation = place_tf.transform.rotation;
+
+                    ROS_INFO_STREAM("Place target '" << place_target << "' found via TF.");
+                } catch (...) {
+                    place_pose = pick_pose;
+                    place_pose.position.y += 0.20;
+                    place_pose.orientation = pick_pose.orientation;
+                }
+            }
+
             // 调用函数执行序列
             execute_pick_and_place(move_group, gripper_group, pick_pose, place_pose);
         }
