@@ -1,6 +1,5 @@
 import sys
 import chess
-import chess.engine
 import chess.svg
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox, QVBoxLayout
 from PyQt5.QtSvg import QSvgWidget
@@ -9,7 +8,6 @@ import rospy
 from std_msgs.msg import String
 
 # ================= 配置区域 =================
-STOCKFISH_PATH = "/usr/games/stockfish"  # 请确保路径正确
 BOARD_SIZE = 600
 
 # ================= 坐标映射配置 =================
@@ -30,7 +28,7 @@ class ChessWindow(QWidget):
         rospy.init_node('chess_gui_node', anonymous=True)
         self.move_pub = rospy.Publisher('/chess_move', String, queue_size=10)
 
-        self.setWindowTitle("Robot Chess Interface (With Coordinates)")
+        self.setWindowTitle("Robot Chess Interface (Local PvP)")
         self.setGeometry(100, 100, BOARD_SIZE, BOARD_SIZE + 50)
 
         self.board = chess.Board()
@@ -39,18 +37,12 @@ class ChessWindow(QWidget):
         self.piece_id_map = {} 
         self.init_piece_ids()
 
-        try:
-            self.engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH)
-        except FileNotFoundError:
-            print(f"错误: 找不到 Stockfish，请检查路径: {STOCKFISH_PATH}")
-            sys.exit(1)
-
         self.layout = QVBoxLayout()
         self.svg_widget = QSvgWidget()
         self.svg_widget.setFixedSize(BOARD_SIZE, BOARD_SIZE)
         self.layout.addWidget(self.svg_widget)
         
-        self.status_label = QLabel("你的回合 (白棋)")
+        self.status_label = QLabel("白棋回合")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.status_label)
         
@@ -134,10 +126,37 @@ class ChessWindow(QWidget):
         self.piece_id_map[dst] = moving_id
         if src in self.piece_id_map: del self.piece_id_map[src]
 
-    def process_move_sequence(self, move, is_human):
+    def process_move_sequence(self, move):
         current_id = self.piece_id_map.get(move.from_square, "Unknown")
         target_name = chess.square_name(move.to_square)
-        player = "[玩家]" if is_human else "[AI引擎]"
+        
+        player_name = "白棋" if self.board.turn == chess.WHITE else "黑棋"
+        player = f"[{player_name}]"
+
+        # === 新增：检测并处理吃子 ===
+        if self.board.is_capture(move):
+            # 确定被吃掉的棋子位置 (处理过路兵 En Passant)
+            if self.board.is_en_passant(move):
+                captured_sq = move.to_square - 8 if self.board.turn == chess.WHITE else move.to_square + 8
+            else:
+                captured_sq = move.to_square
+            
+            captured_id = self.piece_id_map.get(captured_sq)
+            if captured_id:
+                # 获取被吃棋子的物理坐标
+                cx, cy, cz = self.get_gazebo_coords(captured_sq)
+                # 计算弃子区坐标 (y + 0.5)
+                discard_y = cy + 0.5
+                
+                print(f"检测到吃子: {captured_id} -> 弃子区 (y={discard_y:.4f})")
+                
+                # 发送移除指令
+                msg_str_capture = f"{captured_id} {cx} {discard_y} {cz}"
+                self.move_pub.publish(msg_str_capture)
+                rospy.loginfo(f"Published capture move: {msg_str_capture}")
+                
+                # 稍微延时，确保消息顺序进入队列
+                rospy.sleep(0.2)
 
         # === 核心修改：计算物理坐标 ===
         gx, gy, gz = self.get_gazebo_coords(move.to_square)
@@ -163,9 +182,7 @@ class ChessWindow(QWidget):
         self.board.push(move)
         self.update_board_visual()
 
-    # ... mousePressEvent, ai_move, update_board_visual, game_over, closeEvent 保持不变 ...
     def mousePressEvent(self, event):
-        if self.board.turn == chess.BLACK: return
         click_x = event.x() - self.svg_widget.x()
         click_y = event.y() - self.svg_widget.y()
         square_size = BOARD_SIZE / 8
@@ -176,39 +193,31 @@ class ChessWindow(QWidget):
             clicked_square = chess.square(file_idx, rank_idx)
             if self.selected_square is None:
                 piece = self.board.piece_at(clicked_square)
-                if piece and piece.color == chess.WHITE:
+                if piece and piece.color == self.board.turn:
                     self.selected_square = clicked_square
                     piece_id = self.piece_id_map.get(clicked_square, "Unknown")
                     self.status_label.setText(f"选中: {piece_id}")
             else:
                 move = chess.Move(self.selected_square, clicked_square)
                 if self.board.piece_at(self.selected_square).piece_type == chess.PAWN:
-                     if (chess.square_rank(clicked_square) == 7): move.promotion = chess.QUEEN
+                     if (chess.square_rank(clicked_square) == 7 or chess.square_rank(clicked_square) == 0): 
+                         move.promotion = chess.QUEEN
                 if move in self.board.legal_moves:
-                    self.process_move_sequence(move, is_human=True)
+                    self.process_move_sequence(move)
                     self.selected_square = None
-                    self.status_label.setText("AI 思考中...")
-                    QApplication.processEvents()
-                    self.ai_move()
+                    
+                    next_player = "白棋" if self.board.turn == chess.WHITE else "黑棋"
+                    self.status_label.setText(f"{next_player}回合")
+                    
+                    if self.board.is_game_over(): self.game_over()
                 else:
                     self.status_label.setText("非法移动")
                     self.selected_square = None
-
-    def ai_move(self):
-        if self.board.is_game_over(): self.game_over(); return
-        result = self.engine.play(self.board, chess.engine.Limit(time=0.5))
-        if result.move:
-            self.process_move_sequence(result.move, is_human=False)
-            self.status_label.setText("你的回合 (白棋)")
-            if self.board.is_game_over(): self.game_over()
 
     def update_board_visual(self):
         self.svg_widget.load(chess.svg.board(self.board, size=BOARD_SIZE).encode("UTF-8"))
     def game_over(self):
         QMessageBox.information(self, "Game Over", f"结果: {self.board.result()}")
-    def closeEvent(self, event):
-        self.engine.quit()
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ChessWindow()

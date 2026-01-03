@@ -9,6 +9,7 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
+#include <mutex> // 添加 mutex 头文件
 
 // 辅助函数：角度转弧度
 double deg2rad(double deg) {
@@ -97,16 +98,17 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
     arm_group.setNamedTarget("up");
     arm_group.move();
 
-    // 2. 移动到 pick_pose 上方 0.15m
-    ROS_INFO("2. Moving to Pre-Pick (0.15m above)");
+    // 2. 移动到 pick_pose 上方 0.05m
+    ROS_INFO("2. Moving to Pre-Pick (0.05m above)");
     speedUp(arm_group);
     geometry_msgs::Pose pre_pick = pick_pose;
-    pre_pick.position.z += 0.15;
+    pre_pick.position.z += 0.05;
 
     if (!robust_move(arm_group, pre_pick)) return;
 
     // 3. 打开夹爪至 33 度
     ROS_INFO("3. Opening gripper (33 deg)");
+    gripper_group.setMaxVelocityScalingFactor(1.0);
     gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(33.0));
     gripper_group.move();
 
@@ -121,22 +123,23 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
 
     // 5. 合并夹爪至 37 度 (抓取)
     ROS_INFO("5. Closing gripper (37 deg)");
-    gripper_group.setMaxVelocityScalingFactor(0.05);
-    gripper_group.setMaxAccelerationScalingFactor(0.1);
-
+    // gripper_group.setMaxVelocityScalingFactor(0.05);
+    // gripper_group.setMaxAccelerationScalingFactor(0.1);
+    gripper_group.setMaxVelocityScalingFactor(1.0);
+    gripper_group.setMaxAccelerationScalingFactor(1.0); 
     gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", deg2rad(37.0));
     gripper_group.move();
 
     // 6. 移动到 pick_pose 上方 0.15m (笛卡尔空间 - 垂直抬起)
     ROS_INFO("6. Lifting up (0.15m above) [Cartesian]");
-    speedDown(arm_group);
+    
     if (!cartesian_move(arm_group, pre_pick)) return;
 
-    // 7. 移动到 place_pose 上方 0.15m (笛卡尔空间 - 平移)
-    ROS_INFO("7. Moving to Pre-Place (0.15m above) [Cartesian]");
-    speedUp(arm_group);
+    // 7. 移动到 place_pose 上方 0.05m (笛卡尔空间 - 平移)
+    ROS_INFO("7. Moving to Pre-Place (0.05m above) [Cartesian]");
+    speedUp(arm_group);    
     geometry_msgs::Pose pre_place = place_pose;
-    pre_place.position.z += 0.15;
+    pre_place.position.z += 0.05;
     if (!cartesian_move(arm_group, pre_place)) {
          ROS_WARN("Cartesian move to Pre-Place failed, trying joint space...");
          if (!robust_move(arm_group, pre_place)) return;
@@ -147,19 +150,21 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
     speedDown(arm_group);
     if (!cartesian_move(arm_group, place_pose)) {
         ROS_ERROR("Failed to approach place pose.");
-        arm_group.setMaxVelocityScalingFactor(0.8);
+
         return;
     }
-    arm_group.setMaxVelocityScalingFactor(0.8);
+
 
     // 9. 打开夹爪至 0.412 rad (释放)
     ROS_INFO("9. Opening gripper ( 0.412 rad)");
-    gripper_group.setMaxVelocityScalingFactor(0.05);
-    gripper_group.setMaxAccelerationScalingFactor(0.1);
+    // gripper_group.setMaxVelocityScalingFactor(0.05);
+    // gripper_group.setMaxAccelerationScalingFactor(0.1);
+    gripper_group.setMaxVelocityScalingFactor(1.0);
+    gripper_group.setMaxAccelerationScalingFactor(1.0);
     gripper_group.setJointValueTarget("robotiq_85_left_knuckle_joint", 0.412);
     gripper_group.move();
 
-    // 10. 移动到 place_pose 上方 0.15m (撤离)
+    // 10. 移动到 place_pose 上方 0.05m (撤离)
     // 这里通常也建议用笛卡尔，保持垂直撤离
     ROS_INFO("10. Lifting up from Place [Cartesian]");
     speedDown(arm_group);
@@ -182,16 +187,16 @@ public:
         : arm_group("my_arm"), gripper_group("my_gripper"), tf_listener(tf_buffer) 
     {
         // 初始设置
-        arm_group.setMaxVelocityScalingFactor(0.1); 
-        arm_group.setMaxAccelerationScalingFactor(0.1);
+        arm_group.setMaxVelocityScalingFactor(1.0); 
+        arm_group.setMaxAccelerationScalingFactor(1.0);
         arm_group.setPoseReferenceFrame("world");
         arm_group.allowReplanning(true);
         arm_group.setNumPlanningAttempts(100);
         
         // 夹爪设置
-        gripper_group.setMaxVelocityScalingFactor(0.1);
-        gripper_group.setMaxAccelerationScalingFactor(0.1);
-
+        gripper_group.setMaxVelocityScalingFactor(1.0);
+        gripper_group.setMaxAccelerationScalingFactor(1.0);
+        gripper_group.allowReplanning(true);
         // 容差设置
         arm_group.setGoalPositionTolerance(0.01); 
         arm_group.setGoalOrientationTolerance(0.05); 
@@ -207,6 +212,9 @@ public:
     }
 
     void moveCallback(const std_msgs::String::ConstPtr& msg) {
+        // 加锁，确保同一时间只执行一个动作序列
+        std::lock_guard<std::mutex> lock(move_mutex_);
+
         std::stringstream ss(msg->data);
         std::string piece_name;
         double x, y, z;
@@ -253,6 +261,7 @@ private:
     tf2_ros::Buffer tf_buffer;
     tf2_ros::TransformListener tf_listener;
     ros::Subscriber sub;
+    std::mutex move_mutex_; // 添加互斥锁成员变量
 };
 
 int main(int argc, char** argv)
