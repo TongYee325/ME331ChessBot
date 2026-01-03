@@ -12,7 +12,7 @@ catkin_make
 source devel/setup.bash
 ```
 
-2. **打开 3 个终端，并在每个终端都 source 环境**
+2. **打开 4 个终端，并在每个终端都 source 环境**
 > 每个新终端都需要重新 `source` 一次，否则可能找不到 ROS package / node。
 ```bash
 cd <path-to-repo>/ros_noetic_ur5
@@ -45,6 +45,19 @@ rosrun motion_planner move_given_pieces
 Enter chess piece name to PICK (e.g., pion1):
 ```
 输入想要移动的棋子名称（例如：`benteng4`），观察 Gazebo 中机械臂执行**夹取并放置**动作。
+
+6. **终端 4：启动下棋 GUI（默认本地双人）**
+```bash
+python3 <path-to-repo>/ros_noetic_ur5/src/ui/chess_gui.py
+```
+在弹出的 GUI 中进行下棋（默认本地双人对弈）。GUI 的落子将驱动上面的 ROS 流程（发布/规划/执行），从而联动机械臂完成夹取与放置。
+
+---
+
+### 与 AI 对弈（暂不与机械臂联动）
+
+仓库中提供了 `chess_with_ai_no_ros` 用于与 AI 引擎对弈。  
+但由于 **AI 引擎与 ROS 底层代码存在冲突**，目前尚未将**人机模式**与**机械臂联动**集成到同一工作流中；因此该模式仅用于纯对弈验证（no ROS）。
 
 ---
 
@@ -88,5 +101,3 @@ ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazeb
 ![Demo GIF](videos/demo.gif)
 
 - 原始视频位置：`videos/夹取棋子.webm`
-
-
