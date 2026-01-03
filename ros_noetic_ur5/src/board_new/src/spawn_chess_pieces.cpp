@@ -52,9 +52,9 @@ std::string getPieceUrdfName(const std::string& name, const std::string& type) {
     
     // 返回对应的文件名
     if (is_black) {
-        return type + "_black.urdf";
-    } else {
         return type + "_white.urdf";
+    } else {
+        return type + "_black.urdf";
     }
 }
 

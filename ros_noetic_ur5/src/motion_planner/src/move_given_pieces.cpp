@@ -3,10 +3,12 @@
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <std_msgs/String.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <cmath>
+#include <sstream>
 
 // 辅助函数：角度转弧度
 double deg2rad(double deg) {
@@ -174,50 +176,48 @@ void execute_pick_and_place(moveit::planning_interface::MoveGroupInterface& arm_
     ROS_INFO(">>> Pick and Place Complete <<<");
 }
 
-int main(int argc, char** argv)
-{
-    ros::init(argc, argv, "move_given_pieces");
-    ros::NodeHandle nh;
-    
-    ros::AsyncSpinner spinner(2);
-    spinner.start();
+class ChessMoveNode {
+public:
+    ChessMoveNode(ros::NodeHandle& nh) 
+        : arm_group("my_arm"), gripper_group("my_gripper"), tf_listener(tf_buffer) 
+    {
+        // 初始设置
+        arm_group.setMaxVelocityScalingFactor(0.1); 
+        arm_group.setMaxAccelerationScalingFactor(0.1);
+        arm_group.setPoseReferenceFrame("world");
+        arm_group.allowReplanning(true);
+        arm_group.setNumPlanningAttempts(100);
+        
+        // 夹爪设置
+        gripper_group.setMaxVelocityScalingFactor(0.1);
+        gripper_group.setMaxAccelerationScalingFactor(0.1);
 
-    static const std::string PLANNING_GROUP = "my_arm";
-    static const std::string GRIPPER_GROUP = "my_gripper";
+        // 容差设置
+        arm_group.setGoalPositionTolerance(0.01); 
+        arm_group.setGoalOrientationTolerance(0.05); 
+        arm_group.setPlanningTime(10.0);
 
-    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
-    moveit::planning_interface::MoveGroupInterface gripper_group(GRIPPER_GROUP);
-    
-    // 初始设置
-    move_group.setMaxVelocityScalingFactor(0.1); 
-    move_group.setMaxAccelerationScalingFactor(0.1);
-    move_group.setPoseReferenceFrame("world");
-    move_group.allowReplanning(true);
-    move_group.setNumPlanningAttempts(100);
-    // 夹爪设置
-    gripper_group.setMaxVelocityScalingFactor(0.1);
-    gripper_group.setMaxAccelerationScalingFactor(0.1);
+        // 订阅话题
+        sub = nh.subscribe("/chess_move", 10, &ChessMoveNode::moveCallback, this);
+        
+        ROS_INFO("ChessMoveNode initialized. Waiting for commands on /chess_move...");
+        
+        // 等待 TF 缓存
+        ros::Duration(1.0).sleep();
+    }
 
-    // 在 move_group 初始化后添加
-    move_group.setGoalPositionTolerance(0.01); // 允许 1cm 的位置误差
-    move_group.setGoalOrientationTolerance(0.05); // 允许 0.05弧度的角度误差
-    // 增加执行时间，让动作更平缓
-    move_group.setPlanningTime(10.0);
-
-    tf2_ros::Buffer tf_buffer;
-    tf2_ros::TransformListener tf_listener(tf_buffer);
-
-    ROS_INFO("Node started. Waiting for TF data...");
-    ros::Duration(2.0).sleep();
-
-    while (ros::ok()) {
+    void moveCallback(const std_msgs::String::ConstPtr& msg) {
+        std::stringstream ss(msg->data);
         std::string piece_name;
-        std::cout << "\n--------------------------------------------------" << std::endl;
-        std::cout << "Enter chess piece name to PICK (e.g., pion1): " << std::endl;
-        std::cout << "> ";
-        if (!(std::cin >> piece_name)) break;
+        double x, y, z;
+        ss >> piece_name >> x >> y >> z;
 
-        if (piece_name == "exit" || piece_name == "quit") break;
+        if (ss.fail()) {
+            ROS_ERROR("Failed to parse command: %s", msg->data.c_str());
+            return;
+        }
+
+        ROS_INFO("Received Move Command: Piece='%s', Target=(%.4f, %.4f, %.4f)", piece_name.c_str(), x, y, z);
 
         geometry_msgs::Pose pick_pose;
         bool found = false;
@@ -228,56 +228,43 @@ int main(int argc, char** argv)
             pick_pose.position.x = transformStamped.transform.translation.x;
             pick_pose.position.y = transformStamped.transform.translation.y;
             pick_pose.position.z = transformStamped.transform.translation.z;
-            // 直接使用棋子姿态，不加 RPY
             pick_pose.orientation = transformStamped.transform.rotation;
             found = true;
         } catch (tf2::TransformException &ex) {
-            ROS_WARN("Could not find transform: %s", ex.what());
-            continue;
+            ROS_WARN("Could not find transform for '%s': %s", piece_name.c_str(), ex.what());
+            return;
         }
 
         if (found) {
-            // --- 定义 Place Pose：支持用户输入目标帧（通过 TF 查找），否则回退到 pick.y + 0.2 ---
             geometry_msgs::Pose place_pose;
-            std::string place_target;
-            std::cout << "Enter place target frame name or three numbers (x y z):\n> ";
-            std::getline(std::cin >> std::ws, place_target);
+            place_pose.position.x = x;
+            place_pose.position.y = y;
+            place_pose.position.z = z;
+            place_pose.orientation = pick_pose.orientation; // 保持抓取时的姿态
 
-            std::istringstream iss(place_target);
-            double px, py, pz;
-            if ((iss >> px >> py >> pz)) {
-                place_pose.position.x = px;
-                place_pose.position.y = py;
-                if(pz < 0.03) pz = 0.03; // 最小高度限制
-                place_pose.position.z = pz;
-                place_pose.orientation = pick_pose.orientation;
-                ROS_INFO_STREAM("Using manual coordinates: " << px << "," << py << "," << pz);
-            } else if (place_target == "default" || place_target == "auto") {
-                place_pose = pick_pose;
-                place_pose.position.y += 0.20;
-                place_pose.orientation = pick_pose.orientation;
-                ROS_INFO("Using default place offset y+0.2m.");
-            } else {
-                try {
-                    auto place_tf = tf_buffer.lookupTransform("world", place_target, ros::Time(0), ros::Duration(1.0));
-                    place_pose.position.x = place_tf.transform.translation.x;
-                    place_pose.position.y = place_tf.transform.translation.y;
-                    place_pose.position.z = place_tf.transform.translation.z;
-                    place_pose.orientation = place_tf.transform.rotation;
-
-                    ROS_INFO_STREAM("Place target '" << place_target << "' found via TF.");
-                } catch (...) {
-                    place_pose = pick_pose;
-                    place_pose.position.y += 0.20;
-                    place_pose.orientation = pick_pose.orientation;
-                }
-            }
-
-            // 调用函数执行序列
-            execute_pick_and_place(move_group, gripper_group, pick_pose, place_pose);
+            // 执行抓取放置
+            execute_pick_and_place(arm_group, gripper_group, pick_pose, place_pose);
         }
     }
 
-    ros::shutdown();
+private:
+    moveit::planning_interface::MoveGroupInterface arm_group;
+    moveit::planning_interface::MoveGroupInterface gripper_group;
+    tf2_ros::Buffer tf_buffer;
+    tf2_ros::TransformListener tf_listener;
+    ros::Subscriber sub;
+};
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "move_given_pieces");
+    ros::NodeHandle nh;
+    
+    ros::AsyncSpinner spinner(2);
+    spinner.start();
+
+    ChessMoveNode chess_move_node(nh);
+
+    ros::waitForShutdown();
     return 0;
 }
