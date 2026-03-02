@@ -3,9 +3,12 @@
 
 ### Demo 视频
 
-![Demo GIF](videos/demo.gif)
+与ai对弈仿真
+![Demo GIF](videos/demo1.gif)
+机械臂抓取
 ![Demo GIF](videos/demo2.gif)
-- 原始视频位置：`videos/夹取棋子.webm`
+机械臂沿笛卡尔坐标系移动
+![Demo GIF](videos/demo3.gif)
 
 ---
 
