@@ -1,6 +1,14 @@
 # 机器人建模与控制课程项目
 ## 一个五轴机械臂执行下棋仿真（ROS Noetic 工作流）
 
+### Demo 视频
+
+![Demo GIF](videos/demo.gif)
+![Demo GIF](videos/demo2.gif)
+- 原始视频位置：`videos/夹取棋子.webm`
+
+---
+
 ### Quick Start（ROS Noetic + UR5 + Gazebo）
 
 以下流程适用于本仓库下的 `ros_noetic_ur5` 工作空间（请根据你的实际路径调整）。
@@ -94,10 +102,4 @@ ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazeb
 后续可在以下文件中修改/优化放置策略（例如：根据棋盘格坐标、避障、落子规则等计算目标位姿）：
 - `move_given_pieces.cpp`
 
----
 
-### Demo 视频
-
-![Demo GIF](videos/demo.gif)
-
-- 原始视频位置：`videos/夹取棋子.webm`
