@@ -1,110 +1,110 @@
-# 机器人建模与控制课程项目
-## 一个五轴机械臂执行下棋仿真（ROS Noetic 工作流）
+# Robot Modeling and Control Course Project
+## A 5-Axis Robotic Arm Chess Simulation (ROS Noetic Workflow)
 
-### Demo 视频
+### Demo Videos
 
-与ai对弈仿真
+Simulation against AI
 ![Demo GIF](videos/demo1.gif)
 
-机械臂抓取
+Robotic Arm Grasping
 ![Demo GIF](videos/demo2.gif)
 
-机械臂沿笛卡尔坐标系移动
+Robotic Arm Moving along Cartesian Coordinates
 ![Demo GIF](videos/demo3.gif)
 
 ---
 
-### Quick Start（ROS Noetic + UR5 + Gazebo）
+### Quick Start (ROS Noetic + UR5 + Gazebo)
 
-以下流程适用于本仓库下的 `ros_noetic_ur5` 工作空间（请根据你的实际路径调整）。
+The following process applies to the `ros_noetic_ur5` workspace in this repository (please adjust based on your actual path).
 
-1. **进入 Noetic 工作空间并编译**
+1. **Enter Noetic workspace and compile**
 ```bash
 cd <path-to-repo>/ros_noetic_ur5
 catkin_make
 source devel/setup.bash
 ```
 
-2. **打开 4 个终端，并在每个终端都 source 环境**
-> 每个新终端都需要重新 `source` 一次，否则可能找不到 ROS package / node。
+2. **Open 4 terminals and source the environment in each**
+> Each new terminal needs to be `source`d again, otherwise the ROS package / node may not be found.
 ```bash
 cd <path-to-repo>/ros_noetic_ur5
 source devel/setup.bash
 ```
 
-3. **终端 1：启动 Gazebo + MoveIt Demo**
+3. **Terminal 1: Launch Gazebo + MoveIt Demo**
 ```bash
 roslaunch ur5_moveit_config demo_gazebo.launch
 ```
-等待 Gazebo 中棋子全部生成完成后再继续（通常需要数秒）。
+Wait for all chess pieces to be generated in Gazebo (usually takes a few seconds).
 
-4. **终端 2：发布棋子位姿信息（注意脚本路径）**
+4. **Terminal 2: Publish Chess Piece Pose Information (Note Script Path)**
 ```bash
 python3 <path-to-repo>/ros_noetic_ur5/src/board_new/src/simple_manager.py
 ```
-该脚本用于持续发布棋子位姿信息（供运动规划/抓取节点读取）。
+This script is used to continuously publish chess piece pose information (for the motion planning/grasping node to read).
 
-> 若已在工作空间根目录（`ros_noetic_ur5`）下，也可使用相对路径：
+> If you are already in the workspace root directory (`ros_noetic_ur5`), you can also use a relative path:
 ```bash
 python3 ./src/board_new/src/simple_manager.py
 ```
 
-5. **终端 3：启动抓取并输入要移动的棋子名称**
+5. **Terminal 3: Start Grasping and Input Chess Piece Name to Move**
 ```bash
 rosrun motion_planner move_given_pieces
 ```
-等待出现提示：
+Wait for the prompt:
 ```text
 Enter chess piece name to PICK (e.g., pion1):
 ```
-输入想要移动的棋子名称（例如：`benteng4`），观察 Gazebo 中机械臂执行**夹取并放置**动作。
+Enter the name of the piece you want to move (e.g., `benteng4`), and observe the robotic arm performing the **pick and place** action in Gazebo.
 
-6. **终端 4：启动下棋 GUI（默认本地双人）**
+6. **Terminal 4: Start Chess GUI (Default Local Two-Player)**
 ```bash
 python3 <path-to-repo>/ros_noetic_ur5/src/ui/chess_gui.py
 ```
-在弹出的 GUI 中进行下棋（默认本地双人对弈）。GUI 的落子将驱动上面的 ROS 流程（发布/规划/执行），从而联动机械臂完成夹取与放置。
+Play chess in the popped-up GUI (default local two-player game). The moves in the GUI will drive the ROS process above (publish/plan/execute), thereby linking the robotic arm to complete the pick and place.
 
 ---
 
-### 与 AI 对弈（暂不与机械臂联动）
+### Play against AI (Not Linked with Robotic Arm)
 
-仓库中提供了 `chess_with_ai_no_ros` 用于与 AI 引擎对弈。  
-但由于 **AI 引擎与 ROS 底层代码存在冲突**，目前尚未将**人机模式**与**机械臂联动**集成到同一工作流中；因此该模式仅用于纯对弈验证（no ROS）。
+The repository provides `chess_with_ai_no_ros` for playing against an AI engine.
+However, due to **conflicts between the AI engine and ROS underlying code**, the **Man-Machine mode** has not yet been integrated into the same workflow as the **robotic arm linkage**; therefore, this mode is only used for pure verification (no ROS).
 
 ---
 
-### 调参建议（夹取失败 / 末端与棋子“黏连”）
+### Tuning Suggestions (Grasping Failure / End Effector "Sticking" to Pieces)
 
-若出现以下现象：
-- 夹爪闭合但抓不住棋子（频繁掉落/穿模）
-- 末端与棋子“黏连”，释放不干净
-- 抓取后移动时棋子抖动明显
+If the following phenomena occur:
+- The gripper closes but cannot hold the piece (frequent dropping/clipping)
+- The end effector "sticks" to the piece and does not release cleanly
+- The piece shakes significantly when moving after grasping
 
-可尝试调整 `grasp-fix` 插件参数（Gazebo 抓取稳定性相关）：
+You can try adjusting the `grasp-fix` plugin parameters (related to Gazebo grasping stability):
 
-文件路径：
+File Path:
 ```
 ME331ChessBot/ros_noetic_ur5/src/ur5_robot-master/ur5_moveit_config/config/gazebo_ur5.xacro
 ```
-建议关注 **第 899–918 行**附近的 grasp-fix 插件配置（show/hide 行号以便定位）。
+It is recommended to focus on lines around **899–918** for grasp-fix plugin configuration.
 
-常见参数含义（不同版本命名可能略有差异，以文件内实际字段为准）：
+Common Parameter Meanings (Naming may vary slightly across versions, refer to actual fields in the file):
 
-| 参数（示例名） | 作用 | 调整建议 |
+| Parameter (Ex. Name) | Function | Adjustment Suggestion |
 |---|---|---|
-| `update_rate` | 插件更新频率（Hz），影响“抓稳/释放”的响应速度 | 抓取不稳定可适当提高；过高可能增大计算负担 |
-| `grip_count_threshold` / `max_grip_count` | 判定“已经抓稳”的连续接触计数阈值 | 棋子容易掉：适当增大；黏连严重：适当减小或配合 release 参数 |
-| `release_tolerance` | 判定“允许释放”的阈值/容差（通常与接触/相对速度等相关） | 释放不干净：适当增大；过大可能导致提前释放 |
-| `disable_collisions_on_attach` / `disable_collisions` | 抓取后是否临时禁用夹爪与物体的碰撞（减少抖动/卡住） | 黏连/抖动可尝试开启；但可能降低真实碰撞效果 |
-| `contact_links` / `gripper_link` / `palm_link` | 指定用于接触判定/附着的末端链接集合 | 确保配置与 URDF/MoveIt 中末端 link 命名一致，否则会“抓不住” |
+| `update_rate` | Plugin update frequency (Hz), affecting response speed of "grasping/releasing" | Appropriately increase if grasping is unstable; too high may increase computational burden |
+| `grip_count_threshold` / `max_grip_count` | Consecutive contact count threshold to determine "firmly grasped" | Piece drops easily: increase appropriately; severe sticking: decrease appropriately or combine with release parameter |
+| `release_tolerance` | Threshold/tolerance to allow "release" (usually related to contact/relative speed, etc.) | Not releasing cleanly: increase appropriately; too large may cause premature release |
+| `disable_collisions_on_attach` / `disable_collisions` | Whether to temporarily disable collision between gripper and object after grasping (reduce jitter/stuck) | Sticking/jitter can try enabling; but may reduce realistic collision effects |
+| `contact_links` / `gripper_link` / `palm_link` | Specify the set of end links used for contact determination/attachment | Ensure configuration is consistent with end link naming in URDF/MoveIt, otherwise it will "not grasp" |
 
 ---
 
-### 注意事项（放置逻辑目前为简化版）
+### Notes (Placement Logic is Currently Simplified)
 
-当前棋子**放置位置逻辑未做完整设计**，仅做了简单处理（例如将夹取点在 **y 方向 +0.2** 后放置）。  
-后续可在以下文件中修改/优化放置策略（例如：根据棋盘格坐标、避障、落子规则等计算目标位姿）：
+The current chess piece **placement position logic has not been fully designed**, and only simple processing has been done (such as placing the grasp point at **y direction +0.2**).
+Subsequent modifications/optimizations to the placement strategy can be made in the following files (e.g., calculating target pose based on chessboard grid coordinates, obstacle avoidance, placement rules, etc.):
 - `move_given_pieces.cpp`
 
 
