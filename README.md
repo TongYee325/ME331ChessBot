@@ -1,5 +1,5 @@
 # Robot Modeling and Control Course Project
-## A 5-Axis Robotic Arm Chess Simulation (ROS Noetic Workflow)
+## A 6-Axis Robotic Arm Chess Simulation (ROS Noetic Workflow)
 
 ### Demo Videos
 
